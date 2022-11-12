@@ -3,13 +3,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
+import Clases.Articulos;
+import Clases.ArticulosModell;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -17,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(urlPatterns = {"/NewClass"})
 public class NewClass extends HttpServlet {
+    ArticulosModell clientemodell;
+    Articulos registradosClientes;
+     ArticulosModell[] clientesRegistrados;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -30,17 +35,39 @@ public class NewClass extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet NewClass</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet NewClass at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        try ( PrintWriter respuesta = response.getWriter()) {            
+            clientemodell= new ArticulosModell(
+                request.getParameter("codigo"),
+                request.getParameter("nombres"),
+                request.getParameter("apellidos"),
+                request.getParameter("correo"),
+                request.getParameter("direccion"),
+                request.getParameter("celular"),
+                request.getParameter("tipo")
+            );               
+            
+            if(registradosClientes==null){
+                 registradosClientes=new Articulos();
+            }
+           
+            registradosClientes.guardarClienteModell(clientemodell);//almacenarlo en el array
+             clientesRegistrados= registradosClientes.getClientes();           
+           
+            for (int i = 0; i <  clientesRegistrados.length; i++){
+                    if(! clientesRegistrados[i].getCodigo().isEmpty()){
+                       respuesta.println("<tr><td>" + clientesRegistrados[i].getCodigo()+ "</td>");
+                       respuesta.println("<td>" +  clientesRegistrados[i].getNombres() + "</td>");
+                       respuesta.println("<td>" +  clientesRegistrados[i].getApellidos() + "</td>");
+                       respuesta.println("<td>" +  clientesRegistrados[i].getDireccion()+ "</td>");
+                       respuesta.println("<td>" +  clientesRegistrados[i].getCorreo()+ "</td>");
+                       respuesta.println("<td>" +  clientesRegistrados[i].getCelular()+ "</td>");
+                       respuesta.println("<td>"
+                               
+                               + "<button type=\"button\" onclick=\"confirmar()\" class=\"btn btn-danger formulario-eliminar\">Eliminar</button>"
+                               + "<button type=\"button\" onclick=\"confirmar()\" class=\"btn btn-warning formulario-eliminar\">Editar</button>"
+                               + "</td></tr>");
+                    } 
+                }
         }
     }
 
@@ -84,3 +111,4 @@ public class NewClass extends HttpServlet {
     }// </editor-fold>
 
 }
+
